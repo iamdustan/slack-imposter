@@ -1,0 +1,10 @@
+[package]
+name = "impost"
+version = "0.1.0"
+authors = ["dkasten"]
+
+[dependencies]
+clap = {version = "2", features = ["yaml"]}
+curl = "*"
+rustc-serialize = "0.3"
+
