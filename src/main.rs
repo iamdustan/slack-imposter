@@ -4,7 +4,7 @@ extern crate curl;
 extern crate rustc_serialize;
 use std::io::Read;
 use rustc_serialize::json;
-use clap::{Arg, App};
+use clap::{App};
 use curl::easy::Easy;
 
 #[derive(RustcDecodable, RustcEncodable, Debug)]
@@ -16,43 +16,10 @@ pub struct SlackDataStruct  {
 }
 
 fn main() {
-    let matches = App::new("Impost Your Slack Colleagues")
-        .version("1.0")
-        .author("Dustan Kasten <dustan.kasten@gmail.com>")
-        .about("Does awesome things")
-        .arg(Arg::with_name("config")
-             .short("z")
-             .long("config")
-             .value_name("FILE")
-             .help("Sets a custom config file")
-             .takes_value(true))
-        .arg(Arg::with_name("as")
-             .short("a")
-             .long("as")
-             .value_name("as")
-             .required(true)
-             .help("Who should we impost to be?")
-             .takes_value(true))
-        .arg(Arg::with_name("text")
-             .short("t")
-             .long("text")
-             .value_name("text")
-             .required(true)
-             .help("What do you want them to say?")
-             .takes_value(true))
-        .arg(Arg::with_name("channel")
-             .short("c")
-             .long("channel")
-             .value_name("channel")
-             .help("What channel should they post in?")
-             .takes_value(true))
-        .arg(Arg::with_name("v")
-             .short("v")
-             .multiple(true)
-             .help("Sets the level of verbosity"))
-        .get_matches();
+    let yaml = load_yaml!("config.yaml");
+    let matches = App::from_yaml(yaml).get_matches();
 
-    let yaml = load_yaml!("/Users/dkasten/impost.yaml");
+    let yaml = load_yaml!("../impost.yaml");
     let verbosity = matches.occurrences_of("v");
 
     let who = matches.value_of("as").unwrap();

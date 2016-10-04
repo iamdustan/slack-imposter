@@ -1,0 +1,32 @@
+name: impost
+version: "1.0"
+author: Dustan Kasten <dustan.kasten@gmail.com>
+about: Impost Your Slack Colleagues
+args:
+    - config:
+        short: z
+        long: config
+        value_name: FILE
+        help: Path to slack configuration
+        takes_value: true
+    - as:
+        short: a
+        long: as
+        help: Who should we impost to be?
+        required: true
+        takes_value: true
+    - text:
+        short: t
+        long: text
+        help: What do you want them to say?
+        required: true
+        takes_value: true
+    - channel:
+        short: c
+        long: channel
+        help: What channel should they post in?
+        takes_value: true
+    - verbose:
+        short: v
+        multiple: true
+        help: Sets the level of verbosity
