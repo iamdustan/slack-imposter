@@ -2,18 +2,9 @@
 extern crate clap;
 extern crate curl;
 extern crate rustc_serialize;
-use std::io::Read;
-use rustc_serialize::json;
 use clap::{App};
-use curl::easy::Easy;
 
-#[derive(RustcDecodable, RustcEncodable, Debug)]
-pub struct SlackDataStruct  {
-    text: String,
-    icon_url: String,
-    username: String,
-    channel: String,
-}
+mod slack;
 
 fn main() {
     let yaml = load_yaml!("config.yaml");
@@ -30,7 +21,7 @@ fn main() {
     let username = &yaml[who]["username"].as_str().unwrap();
     let avatar = &yaml[who]["avatar"].as_str().unwrap();
 
-    let body = SlackDataStruct {
+    let body = slack::SlackDataStruct {
         text: text.to_string(),
         icon_url: avatar.to_string(),
         username: username.to_string(),
@@ -38,18 +29,7 @@ fn main() {
     };
 
     if verbosity > 0 { println!("Imposting to be {:?}", body) }
-    let encoded = json::encode(&body).unwrap();
-    let mut data = encoded.as_bytes();
-
-    let mut easy = Easy::new();
-    easy.url(url).unwrap();
-    easy.post(true).unwrap();
-    easy.post_field_size(data.len() as u64).unwrap();
-    let mut transfer = easy.transfer();
-    transfer.read_function(|buf| {
-        Ok(data.read(buf).unwrap_or(0))
-    }).unwrap();
-    transfer.perform().unwrap();
+    slack::send(&url, &body);
 
     if verbosity > 0 { println!("Imposted 👹") }
 }
