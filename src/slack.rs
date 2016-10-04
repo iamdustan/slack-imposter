@@ -6,26 +6,36 @@ use rustc_serialize::json;
 use curl::easy::Easy;
 
 #[derive(RustcDecodable, RustcEncodable, Debug)]
-pub struct SlackDataStruct  {
-    pub text: String,
-    pub icon_url: String,
-    pub username: String,
-    pub channel: String,
+pub struct SlackImposter  {
+    text: String,
+    icon_url: String,
+    username: String,
+    channel: String,
 }
 
-pub fn send(url: &str, body: &SlackDataStruct) -> u8 {
-    let encoded = json::encode(&body).unwrap();
-    let mut data = encoded.as_bytes();
+impl SlackImposter {
+    pub fn new (text: &str, icon_url: &str, username: &str, channel: &str) -> SlackImposter {
+        SlackImposter {
+            text: text.to_string(),
+            icon_url: icon_url.to_string(),
+            username: username.to_string(),
+            channel: channel.to_string(),
+        }
+    }
 
-    let mut easy = Easy::new();
-    easy.url(url).unwrap();
-    easy.post(true).unwrap();
-    easy.post_field_size(data.len() as u64).unwrap();
-    let mut transfer = easy.transfer();
-    transfer.read_function(|buf| {
-        Ok(data.read(buf).unwrap_or(0))
-    }).unwrap();
-    transfer.perform().unwrap();
-    0
+    pub fn send(self, url: &str) {
+        let encoded = json::encode(&self).unwrap();
+        let mut data = encoded.as_bytes();
+
+        let mut easy = Easy::new();
+        easy.url(url).unwrap();
+        easy.post(true).unwrap();
+        easy.post_field_size(data.len() as u64).unwrap();
+        let mut transfer = easy.transfer();
+        transfer.read_function(|buf| {
+            Ok(data.read(buf).unwrap_or(0))
+        }).unwrap();
+        transfer.perform().unwrap();
+    }
 }
 

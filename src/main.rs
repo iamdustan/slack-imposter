@@ -21,15 +21,9 @@ fn main() {
     let username = &yaml[who]["username"].as_str().unwrap();
     let avatar = &yaml[who]["avatar"].as_str().unwrap();
 
-    let body = slack::SlackDataStruct {
-        text: text.to_string(),
-        icon_url: avatar.to_string(),
-        username: username.to_string(),
-        channel: channel.to_string(),
-    };
+    let imposter = slack::SlackImposter::new(text, avatar, username, channel);
 
-    if verbosity > 0 { println!("Imposting to be {:?}", body) }
-    slack::send(&url, &body);
-
+    if verbosity > 0 { println!("Imposting to be {:?}", imposter) }
+    imposter.send(&url);
     if verbosity > 0 { println!("Imposted 👹") }
 }
